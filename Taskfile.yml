@@ -1,0 +1,101 @@
+version: "3"
+
+vars:
+  TMUX_SESSION: videoai-dev # Name for the dedicated tmux session
+
+tasks:
+  ## --------------------------------------------------------------------
+  ## 🚀 Main Development Tasks (Tmux Automated)
+  ## --------------------------------------------------------------------
+
+  dev:
+    desc: "Starts backend and frontend in a dedicated, split-pane tmux session."
+    cmds:
+      - task: tmux-setup-split
+      - task: tmux-attach
+
+  # Tmux Setup (Internal Helper Task)
+  tmux-setup-split:
+    internal: true
+    preconditions:
+      - tmux has-session -t {{.TMUX_SESSION}}:
+          negate: true
+          msg: "tmux session {{.TMUX_SESSION}} already exists. Kill it with task dev:kill."
+    cmds:
+      # 1. Create a new detached session with one window named 'dev-logs'
+      - tmux new-session -d -s {{.TMUX_SESSION}} -n dev-logs
+
+      # 2. Run the Backend command (task dev:backend) in the first pane (pane 0)
+      # Note: We wrap the task command in /bin/sh to ensure it executes correctly
+      - tmux send-keys -t {{.TMUX_SESSION}}:dev-logs.0 'sh -c "task dev:backend"' C-m
+
+      # 3. Split the current window vertically (-h) to create a new pane (pane 1)
+      - tmux split-window -h
+
+      # 4. Run the Frontend command (task dev:frontend) in the new pane (pane 1)
+      - tmux send-keys -t {{.TMUX_SESSION}}:dev-logs.1 'sh -c "task dev:frontend"' C-m
+
+      # 5. Select the first pane (Backend) to be the active one when attached
+      - tmux select-pane -t {{.TMUX_SESSION}}:dev-logs.0
+
+  # Tmux Attach (Internal Helper Task)
+  tmux-attach:
+    internal: true
+    cmds:
+      - tmux attach-session -t {{.TMUX_SESSION}}
+
+  # Tmux Kill (Helper for Cleanup)
+  "dev:kill":
+    desc: "Kills the dedicated tmux session (and stops all running apps inside it)."
+    cmds:
+      - tmux kill-session -t {{.TMUX_SESSION}}
+
+  ## --------------------------------------------------------------------
+  ## ♻️ Service Definitions (Used by both Tmux and Legacy)
+  ## --------------------------------------------------------------------
+
+  "dev:backend":
+    desc: "Run backend in development mode"
+    dir: backend
+    cmds:
+      - air
+
+  "dev:frontend":
+    desc: "Run frontend in development mode"
+    dir: frontend
+    cmds:
+      - bun --bun run dev
+
+  ## --------------------------------------------------------------------
+  ## ⚠️ Legacy Dev Task (Logs will be mixed)
+  ## --------------------------------------------------------------------
+
+  "dev:parallel-mixed":
+    desc: "Run backend and frontend in parallel (logs will be mixed)"
+    deps:
+      - dev:backend
+      - dev:frontend
+
+  ## --------------------------------------------------------------------
+  ## 🏗️ Build Tasks (Unchanged)
+  ## --------------------------------------------------------------------
+
+  build:
+    desc: "Build backend and frontend for production"
+    cmds:
+      - task: build:backend
+      - task: build:frontend
+
+  "build:backend":
+    desc: "Build backend for production"
+    dir: backend
+    cmds:
+      - go build -o ../dist/server main.go
+
+  "build:frontend":
+    desc: "Build frontend for production"
+    dir: frontend
+    cmds:
+      - bun --bun run build
+
+
