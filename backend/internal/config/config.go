@@ -9,10 +9,32 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Environment constants
+const (
+	EnvDevelopment = "development"
+	EnvProduction  = "production"
+)
+
+// Log level constants
+const (
+	LogLevelDebug = "debug"
+	LogLevelInfo  = "info"
+	LogLevelWarn  = "warn"
+	LogLevelError = "error"
+)
+
+// Log format constants
+const (
+	LogFormatJSON = "json"
+	LogFormatText = "text"
+)
+
 type Config struct {
 	Port        string
 	Environment string
 	CORSOrigins []string
+	LogLevel    string
+	LogFormat   string
 }
 
 func Load() (*Config, error) {
@@ -32,6 +54,9 @@ func Load() (*Config, error) {
 	if env == "" {
 		return nil, errors.New("ENVIRONMENT environment variable is required")
 	}
+	if env != EnvDevelopment && env != EnvProduction {
+		return nil, errors.New("ENVIRONMENT must be either 'development' or 'production'")
+	}
 
 	corsOriginsEnv := os.Getenv("CORS_ORIGINS")
 	if corsOriginsEnv == "" {
@@ -49,9 +74,30 @@ func Load() (*Config, error) {
 		return nil, errors.New("CORS_ORIGINS contains no valid origins")
 	}
 
+	// Log configuration with defaults
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		if env == EnvDevelopment {
+			logLevel = LogLevelDebug
+		} else {
+			logLevel = LogLevelInfo
+		}
+	}
+
+	logFormat := os.Getenv("LOG_FORMAT")
+	if logFormat == "" {
+		if env == EnvDevelopment {
+			logFormat = LogFormatText
+		} else {
+			logFormat = LogFormatJSON
+		}
+	}
+
 	return &Config{
 		Port:        port,
 		Environment: env,
 		CORSOrigins: corsOrigins,
+		LogLevel:    logLevel,
+		LogFormat:   logFormat,
 	}, nil
 }

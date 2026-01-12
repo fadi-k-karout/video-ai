@@ -7,14 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"videoai/internal/config"
 	"videoai/internal/handlers"
+	"videoai/internal/middleware"
 )
 
 func SetupRoutes(cfg *config.Config) *gin.Engine {
-	if cfg.Environment == "production" {
+	if cfg.Environment == config.EnvProduction {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
+
+	// Logging middleware: structured in prod, default gin logger in dev
+	if cfg.Environment == config.EnvProduction {
+		r.Use(middleware.RequestLogger())
+	} else {
+		r.Use(gin.Logger())
+	}
 
 	// CORS middleware
 	r.Use(cors.New(cors.Config{
