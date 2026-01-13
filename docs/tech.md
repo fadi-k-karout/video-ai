@@ -35,10 +35,11 @@
 
 ### API Design
 - **RESTful APIs**: Standard HTTP methods and status codes
-- **JSON Communication**: Structured request/response format
+- **JSend Compliance**: Structured response format (status, message, data, code)
 - **Request Tracing**: UUID-based request correlation
-- **Error Handling**: Consistent error response structure
+- **Error Handling**: Layered error system with internal/client message separation
 - **Versioning**: API versioning strategy (/api/v1/)
+- **Security**: No sensitive data in client-facing error messages
 
 ### Frontend Architecture
 - **Component-Based**: Reusable Svelte components

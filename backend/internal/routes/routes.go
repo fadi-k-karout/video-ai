@@ -35,6 +35,9 @@ func SetupRoutes(cfg *config.Config) *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// Error handling middleware
+	r.Use(middleware.ErrorHandler())
+
 	// API routes
 	api := r.Group("/api")
 	{
