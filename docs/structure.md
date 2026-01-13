@@ -25,12 +25,17 @@ backend/
 │   │   ├── health.go            # Health check handler
 │   │   └── health_test.go       # Handler tests
 │   ├── middleware/
-│   │   └── logger.go            # Request logging, error handling
+│   │   ├── error.go             # Error handling middleware
+│   │   ├── error_test.go        # Error middleware tests
+│   │   └── logger.go            # Request logging
 │   ├── routes/
 │   │   └── routes.go            # Route definitions and setup
+│   ├── responses/
+│   │   └── responses.go         # JSend response helpers
 │   ├── services/                # Business logic layer
 │   ├── models/                  # Data structures
-│   └── errors/                  # Custom error types
+│   └── errors/
+│       └── errors.go            # Custom error types with security separation
 ├── pkg/                         # Public packages (reusable)
 ├── configs/                     # Configuration files
 ├── scripts/                     # Deployment and utility scripts
@@ -111,16 +116,18 @@ import { writable } from 'svelte/store';
 ### Backend Patterns
 - **Layered Architecture**: handlers → services → models
 - **Dependency Injection**: Pass dependencies through constructors
-- **Error Handling**: Custom error types with HTTP status codes
+- **Error Handling**: Security-focused error system with internal/client separation
+- **JSend Compliance**: Standardized API response format
 - **Middleware Chain**: logger → CORS → auth → error handler
 - **Configuration**: Environment-based with struct validation
 - **Testing**: Table-driven tests, behavior over implementation
 
 ### API Design
 - **RESTful endpoints**: `/api/v1/resource`
-- **JSON responses**: Consistent structure with error codes
+- **JSend responses**: Consistent structure with status, message, data, code fields
 - **Request IDs**: UUID for request tracing
 - **Status codes**: Standard HTTP codes (200, 400, 404, 500)
+- **Error Security**: Internal messages for logging, safe messages for clients
 - **CORS**: Configured for frontend origins
 
 ### Frontend Patterns
