@@ -43,7 +43,7 @@
 
 ### Frontend Architecture
 - **Component-Based**: Reusable Svelte components
-- **State Management**: Svelte stores for global state
+- **State Management**: Svelte5 runes for state
 - **Type Safety**: TypeScript throughout the application
 - **API Integration**: Centralized HTTP client with error handling
 - **Responsive Design**: Mobile-first approach

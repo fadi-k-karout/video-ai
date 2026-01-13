@@ -1,81 +1,73 @@
-# Video AI - Product Documentation
+# Video Intelligence Engine - Product Documentation
 
 ## Product Purpose
-Video AI is a web application that leverages artificial intelligence to process, analyze, and enhance video content. The platform democratizes advanced video processing capabilities, making AI-powered video enhancement accessible to creators, businesses, and developers.
+Video Intelligence Engine is a high-performance web platform that transforms unstructured video content into searchable, interactive, and structured knowledge. By combining multimodal LLMs with advanced semantic caching, the platform enables users to instantly summarize, analyze, and chat with videos from diverse sources like YouTube, online courses, and local uploads.
 
 ## Target Users
-- **Content Creators**: YouTubers, social media influencers, and video producers seeking to enhance video quality and engagement
-- **Businesses**: Marketing teams, e-commerce companies, and enterprises needing automated video processing for scale
-- **Developers**: Technical teams integrating video AI capabilities into their applications via API
-- **Media Professionals**: Video editors, production houses, and media companies requiring batch processing capabilities
+- **Students & Lifelong Learners**: Individuals needing to quickly digest long educational videos, lectures, and online courses.
+- **Researchers & Analysts**: Professionals who need to extract specific data points or "search" through hours of video footage semantically.
+- **Content Consumers**: Users looking to save time by previewing video content through structured summaries before committing to a full watch.
+- **Developers & AI Engineers**: Technical teams looking for a reference implementation of a cost-optimized, Go-based AI orchestration engine.
 
 ## Key Features
 
-### Core Video Processing
-- **Upload & Management**: Drag-and-drop interface supporting multiple video formats (MP4, AVI, MOV, WebM)
-- **AI Enhancement**: Quality improvement, noise reduction, and resolution upscaling
-- **Real-time Processing**: Live status updates with progress tracking and ETA
-- **Batch Operations**: Process multiple videos simultaneously with queue management
+### Core Intelligence Engine
+- **Multimodal Summarization**: Leverages Gemini 1.5/3 to "watch" and "listen" to videos, generating rich Markdown summaries.
+- **Semantic Video Chat**: A RAG (Retrieval-Augmented Generation) interface powered by Pinecone that lets users ask specific questions about video content.
+- **Two-Tier Caching**: A high-speed Go logic layer that checks Firestore for existing summaries to eliminate redundant LLM costs and latency.
+- **Multi-Source Ingestion**: Native support for YouTube URLs, direct file uploads, and public video links.
 
 ### User Experience
-- **Intuitive Interface**: Modern, responsive web design optimized for desktop and mobile
-- **Progress Tracking**: Real-time feedback with detailed processing stages
-- **History Management**: Access to previous processing jobs and results
-- **Preview & Compare**: Side-by-side comparison of original vs processed videos
+- **Interactive Markdown Viewer**: Clean, formatted summaries with bolding, lists, and headers for easy readability.
+- **Real-Time Streaming**: Watch summaries generate line-by-line using SvelteKit's reactive components and Go's streaming capabilities.
+- **Dashboard & Library**: A personal history of processed videos with the ability to revisit previous chats and summaries.
+- **Mobile-First Design**: Fully responsive SvelteKit frontend optimized for reading and chatting on the go.
 
-### API Integration
-- **RESTful API**: Programmatic access for developers and integrations
-- **Webhook Support**: Real-time notifications for processing completion
-- **Rate Limiting**: Fair usage policies with quota management
-- **Authentication**: Secure API access with token-based authentication
+### Technical Architecture
+- **High-Concurrency Backend**: Built with **Golang** and **Genkit** for efficient, type-safe AI flow management.
+- **Modern Frontend**: Built with **SvelteKit** and **Bun** for sub-second boot times and high-velocity development.
+- **Managed Prompts**: Uses Genkit `dotprompt` to decouple AI instructions from application logic for easier iteration.
+- **Vectorized Search**: Segment-based indexing in **Pinecone** for precise retrieval of video moments.
 
 ## Business Objectives
 
 ### Primary Goals
-- **Accessibility**: Make advanced video AI accessible to non-technical users
-- **Scalability**: Handle high-volume processing with cloud-native architecture
-- **Quality**: Deliver professional-grade video enhancement results
-- **Performance**: Minimize processing time while maintaining quality
+- **Efficiency**: Reduce the time-to-insight for video content from hours to seconds.
+- **Cost-Effectiveness**: Demonstrate a production-ready model for minimizing AI API expenses through strategic caching.
+- **Depth**: Provide more than just "text transcripts" by including visual context analysis (slides, code, speaker actions).
+- **Scalability**: Utilize Go’s lightweight footprint to handle thousands of concurrent analysis requests.
 
 ### Success Metrics
-- User engagement and retention rates
-- Processing accuracy and quality scores
-- API adoption and integration success
-- Customer satisfaction and feedback scores
+- **Cache Hit Ratio**: Percentage of requests served from Firestore vs. generated by LLM.
+- **User Time-Saved**: Estimated difference between video duration and summary read-time.
+- **Retrieval Accuracy**: Success rate of the "Chat" feature in finding specific video segments.
+- **API Latency**: Response times for "Hot Cache" (Firestore) vs. "Cold Start" (LLM Generation).
 
 ## User Journey
 
-### 1. Onboarding
-- Simple registration with email verification
-- Interactive tutorial showcasing key features
-- Free tier access with processing credits
+### 1. Ingestion
+- User pastes a YouTube link or drops a file into the SvelteKit interface.
+- System generates a unique fingerprint for the video to check for cached intelligence.
 
-### 2. Video Upload
-- Drag-and-drop or file browser upload
-- Automatic format validation and optimization recommendations
-- Upload progress with pause/resume capability
+### 2. Intelligent Processing
+- **Cache Hit**: User receives a beautiful Markdown summary in <100ms.
+- **Cache Miss**: Go backend triggers a Genkit flow; Gemini analyzes the video, saves the result to Firestore, and indexes segments in Pinecone.
 
-### 3. Processing Configuration
-- Select AI enhancement options (quality, effects, analysis)
-- Preview processing parameters and estimated time
-- Queue management for multiple videos
+### 3. Knowledge Consumption
+- User reads the structured Markdown summary rendered from the LLM's output.
+- User toggles the "Chat" sidebar to ask deep-dive questions like *"What specific code snippet did he show at the 5-minute mark?"*
 
-### 4. Results & Delivery
-- Real-time processing updates with detailed logs
-- Preview enhanced videos with comparison tools
-- Download options (various formats and qualities)
-- Share capabilities and cloud storage integration
+### 4. Persistence & Sharing
+- The summary and chat history are saved to the user's profile.
+- Option to export the summary as a PDF or share a public link to the intelligence report.
 
 ## Competitive Advantages
-- **Speed**: Optimized processing pipeline for faster results
-- **Quality**: State-of-the-art AI models for superior enhancement
-- **Usability**: Intuitive interface requiring no technical expertise
-- **Flexibility**: API-first design enabling custom integrations
-- **Cost-Effective**: Competitive pricing with transparent usage-based billing
+- **Speed**: Bun + SvelteKit + Go creates a sub-second "perceived" performance experience.
+- **Hybrid Caching**: Unlike generic summarizers, we save money and time by never processing the same video twice.
+- **Multimodal Depth**: We capture visual information (text on slides, whiteboard drawings) that transcript-only tools miss.
+- **Developer-Centric**: Built with the latest standards (Genkit Go, Bun, Pinecone) for maximum maintainability.
 
 ## Future Vision
-- **Advanced AI Features**: Object tracking, scene analysis, automated editing
-- **Collaboration Tools**: Team workspaces and shared processing queues
-- **Mobile Apps**: Native iOS and Android applications
-- **Enterprise Features**: Custom models, on-premise deployment, advanced analytics
-- **Marketplace**: Community-driven AI models and processing templates
+- **Automated Note-Taking**: Integration with Notion/Obsidian to automatically push video insights to personal knowledge bases.
+- **Collaborative Intelligence**: Shared "folders" where teams can chat with a library of industry-related videos together.
+- **Voice-to-Video**: Ask questions to the video intelligence engine using natural voice commands.
