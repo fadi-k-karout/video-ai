@@ -32,7 +32,7 @@ func (e *APIError) Error() string {
 	return e.internalMsg
 }
 
-func BadRequest(message string, data map[string]any) *APIError {
+func BadRequest(message string, data any) *APIError {
 	return &APIError{
 		Code:          http.StatusBadRequest,
 		internalMsg:   message,

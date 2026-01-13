@@ -18,6 +18,15 @@ func Success(c *gin.Context, data any) {
 
 // Error sends a JSend error or fail response
 func Error(c *gin.Context, err *errors.APIError) {
+	if err == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
+			"code":   http.StatusInternalServerError,
+			"message": errors.MsgInternalError,
+		})
+		return
+	}
+	
 	response := gin.H{
 		"status": err.Type,
 		"code":   err.Code,

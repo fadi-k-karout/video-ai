@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,6 +19,7 @@ func TestErrorHandler(t *testing.T) {
 		expectedStatus int
 		expectedType   string
 		expectedMsg    string
+		expectedCode   int
 	}{
 		{
 			name: "BadRequest error",
@@ -27,6 +29,7 @@ func TestErrorHandler(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 			expectedType:   "fail",
 			expectedMsg:    errors.MsgBadRequest,
+			expectedCode:   http.StatusBadRequest,
 		},
 		{
 			name: "Unauthorized error",
@@ -36,6 +39,7 @@ func TestErrorHandler(t *testing.T) {
 			expectedStatus: http.StatusUnauthorized,
 			expectedType:   "fail",
 			expectedMsg:    errors.MsgUnauthorized,
+			expectedCode:   http.StatusUnauthorized,
 		},
 		{
 			name: "NotFound error",
@@ -45,6 +49,7 @@ func TestErrorHandler(t *testing.T) {
 			expectedStatus: http.StatusNotFound,
 			expectedType:   "fail",
 			expectedMsg:    errors.MsgNotFound,
+			expectedCode:   http.StatusNotFound,
 		},
 		{
 			name: "InternalError",
@@ -54,6 +59,17 @@ func TestErrorHandler(t *testing.T) {
 			expectedStatus: http.StatusInternalServerError,
 			expectedType:   "error",
 			expectedMsg:    errors.MsgInternalError,
+			expectedCode:   http.StatusInternalServerError,
+		},
+		{
+			name: "Non-APIError gets wrapped",
+			setupError: func(c *gin.Context) {
+				c.Error(fmt.Errorf("raw error"))
+			},
+			expectedStatus: http.StatusInternalServerError,
+			expectedType:   "error",
+			expectedMsg:    errors.MsgInternalError,
+			expectedCode:   http.StatusInternalServerError,
 		},
 		{
 			name: "No error - should not interfere",
@@ -97,6 +113,10 @@ func TestErrorHandler(t *testing.T) {
 
 				if response["message"] != tt.expectedMsg {
 					t.Errorf("Expected message %s, got %s", tt.expectedMsg, response["message"])
+				}
+				
+				if int(response["code"].(float64)) != tt.expectedCode {
+					t.Errorf("Expected code %d, got %v", tt.expectedCode, response["code"])
 				}
 			}
 		})
